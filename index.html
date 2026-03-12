@@ -19,22 +19,43 @@
 <body>
     <div id="map"></div>
     <script>
-        // Сообщаем Телеграму, что приложение готово и его можно показывать
         window.Telegram.WebApp.ready();
-        // Автоматически растягиваем окно на весь экран телефона
         window.Telegram.WebApp.expand(); 
 
-        // Создаем карту
         var map = L.map('map').setView([41.2995, 69.2401], 12);
-        // Загружаем карту в ВЫСОКОМ качестве для мобильных телефонов
-        // Подключаем премиум-дизайн карты (CARTO Voyager), он решает проблему со шрифтами
+        
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             attribution: '© OpenStreetMap, © CARTO',
             maxZoom: 19
         }).addTo(map);
 
-        var marker = L.marker([41.2995, 69.2401]).addTo(map);
-        marker.bindPopup("<b>Привет, Ташкент!</b><br>Здесь скоро будут наши рестораны.").openPopup();
+        // 1. Читаем "хвостик" из ссылки
+        var urlParams = new URLSearchParams(window.location.search);
+        var dataParam = urlParams.get('d');
+
+        if (dataParam) {
+            // 2. Если данные есть, разбиваем их по символу "|" (получаем список мест)
+            var places = dataParam.split('|');
+            
+            places.forEach(function(place) {
+                // Разделяем id, lat, lon и название
+                var parts = place.split(',');
+                if (parts.length >= 4) {
+                    var id = parts[0];
+                    var lat = parseFloat(parts[1]);
+                    var lon = parseFloat(parts[2]);
+                    var name = parts[3];
+
+                    // Ставим маркер на карту
+                    var marker = L.marker([lat, lon]).addTo(map);
+                    marker.bindPopup("<b>" + name + "</b>");
+                }
+            });
+        } else {
+            // Если данных нет (например, открыли просто в браузере), показываем тестовую точку
+            var marker = L.marker([41.2995, 69.2401]).addTo(map);
+            marker.bindPopup("<b>Привет, Ташкент!</b><br>Жду данные из базы...").openPopup();
+        }
     </script>
 </body>
 </html>
