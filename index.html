@@ -29,16 +29,46 @@
             maxZoom: 19
         }).addTo(map);
 
-        // 1. Читаем "хвостик" из ссылки
+        // === НОВАЯ ФИШКА: ИЩЕМ ПОЛЬЗОВАТЕЛЯ (GPS) ===
+        // Просим карту найти пользователя (setView: false - чтобы не дергать экран резко)
+        map.locate({setView: false, maxZoom: 16});
+
+        // Когда телефон дал координаты, рисуем синюю точку
+        map.on('locationfound', function(e) {
+            // Синяя точка
+            L.circleMarker(e.latlng, {
+                radius: 8,
+                fillColor: "#0078ff", // Красивый синий цвет
+                color: "#ffffff",     // Белая обводка
+                weight: 3,
+                opacity: 1,
+                fillOpacity: 1
+            }).addTo(map).bindPopup("<b>📍 Вы находитесь здесь!</b>");
+
+            // Полупрозрачный круг (показывает точность GPS)
+            L.circle(e.latlng, e.accuracy / 2, {
+                color: '#0078ff',
+                fillColor: '#0078ff',
+                fillOpacity: 0.15,
+                weight: 1
+            }).addTo(map);
+        });
+
+        // Если юзер не дал доступ к GPS, просто игнорируем
+        map.on('locationerror', function(e) {
+            console.log("Доступ к локации запрещен или недоступен.");
+        });
+        // ============================================
+
+        // 1. Читаем "хвостик" из ссылки с ресторанами
         var urlParams = new URLSearchParams(window.location.search);
         var dataParam = urlParams.get('d');
 
         if (dataParam) {
-            // 2. Если данные есть, разбиваем их по символу "|" (получаем список мест)
+            // 2. Если данные есть, разбиваем их по символу "|"
             var places = dataParam.split('|');
             
             places.forEach(function(place) {
-                // Разделяем id, lat, lon и название
                 var parts = place.split(',');
                 if (parts.length >= 4) {
                     var id = parts[0];
@@ -46,15 +76,11 @@
                     var lon = parseFloat(parts[2]);
                     var name = parts.slice(3).join(','); // Берем название
 
-                    // Ставим маркер на карту
+                    // Ставим маркеры ресторанов
                     var marker = L.marker([lat, lon]).addTo(map);
-                    marker.bindPopup("<b>" + name + "</b>");
+                    marker.bindPopup("<b>🍔 " + name + "</b>");
                 }
             });
-        } else {
-            // Если данных нет, показываем тестовую точку
-            var marker = L.marker([41.2995, 69.2401]).addTo(map);
-            marker.bindPopup("<b>Привет, Ташкент!</b><br>Жду данные из базы...").openPopup();
         }
     </script>
 </body>
