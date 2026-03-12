@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Карта Заведений</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { padding: 0; margin: 0; }
+        html, body, #map { height: 100%; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        // Создаем карту и центрируем её на Ташкенте (координаты: 41.2995, 69.2401)
+        var map = L.map('map').setView([41.2995, 69.2401], 12);
+
+        // Загружаем саму прорисовку карты (улицы, дома)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Ставим тестовую точку в центре
+        var marker = L.marker([41.2995, 69.2401]).addTo(map);
+        marker.bindPopup("<b>Привет, Ташкент!</b><br>Здесь скоро будут наши рестораны.").openPopup();
+    </script>
+</body>
+</html>
