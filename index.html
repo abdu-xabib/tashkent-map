@@ -44,7 +44,7 @@
                     var id = parts[0];
                     var lat = parseFloat(parts[1]);
                     var lon = parseFloat(parts[2]);
-                    var name = parts[3];
+                    var name = parts.slice(3).join(','); // Берем название
 
                     // Ставим маркер на карту
                     var marker = L.marker([lat, lon]).addTo(map);
@@ -52,7 +52,7 @@
                 }
             });
         } else {
-            // Если данных нет (например, открыли просто в браузере), показываем тестовую точку
+            // Если данных нет, показываем тестовую точку
             var marker = L.marker([41.2995, 69.2401]).addTo(map);
             marker.bindPopup("<b>Привет, Ташкент!</b><br>Жду данные из базы...").openPopup();
         }
