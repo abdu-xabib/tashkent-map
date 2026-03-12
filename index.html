@@ -36,15 +36,17 @@
         // Когда телефон дал координаты, рисуем синюю точку
         map.on('locationfound', function(e) {
             // Синяя точка
-            L.circleMarker(e.latlng, {
-                radius: 8,
-                fillColor: "#0078ff", // Красивый синий цвет
-                color: "#ffffff",     // Белая обводка
-                weight: 3,
-                opacity: 1,
-                fillOpacity: 1
-            }).addTo(map).bindPopup("<b>📍 Вы находитесь здесь!</b>");
+            // Создаем кастомную, очень заметную иконку пользователя
+            var userIcon = L.divIcon({
+                className: 'user-marker',
+                // Рисуем кружок с тенью и эмодзи внутри прямо через HTML
+                html: '<div style="font-size: 24px; background: white; border-radius: 50%; width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; border: 3px solid #0078ff; box-shadow: 0 0 15px rgba(0, 120, 255, 0.8);">🙋‍♂️</div>',
+                iconSize: [40, 40], // Размер невидимой рамки
+                iconAnchor: [20, 20] // Смещаем центр иконки точно в координаты
+            });
 
+            // Ставим эту иконку на карту
+            L.marker(e.latlng, {icon: userIcon}).addTo(map).bindPopup("<b>📍 Вы находитесь здесь!</b>");
             // Полупрозрачный круг (показывает точность GPS)
             L.circle(e.latlng, e.accuracy / 2, {
                 color: '#0078ff',
